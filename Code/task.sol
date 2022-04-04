@@ -1,70 +1,93 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
-import 'task.sol';
-import 'task1.sol';
-import 'task2.sol';
-import 'task3.sol';
 
-contract master{
 
-    address[4] addressT;
-    // address addressT1;
-    // address addressT2;
-    // address addressT3;
+contract task{
 
-    
-    function setAddressT(address[4] _addressT) external {
-        addressT= _addressT;
+    // enum Securitybug {critical, medium, light}
+
+    struct price
+    {
+        uint softwaremod;
+        uint webdev;
+        uint integration;
+        uint resources;
     }
 
-    string[4] status;
-    uint256[4] time1;
-    uint256[4] starttime1;
-    uint256[4] diff;
-    task.price expp;
-    task1.price expp1;
-    task2.price expp2;
-    task3.price expp3;
+    struct criteria{
+        uint8 linecoverage;
+        uint8 branchcoverage;
+        string key;
+        uint8 cyclicDependency;
+        // Securitybug bug;
+        price p1;
 
-    function callCheck() public view returns(uint256[4],string)
-    {
+    }
+
+     // Declaring a structure object
+   criteria c1;
+  uint256 time;
+  uint256 starttime;
+   function set_detail() public {
+       //input
+      c1 = criteria(60,80, "40ece4500f7575f387e9e83e4a6c4ef9c9eb0a8988c819b4e50ad4755c6dbb7e",1, price(60, 70, 80, 90));
+      starttime= now;
+   }
+  
+
+criteria c2;
+address dev;
+
+function take_detail(uint8 _linecoverage, uint8 _branchcoverage, string memory _key,
+   uint8 _cyclicDependency, price memory _p1) public
+   {
+       c2= criteria(_linecoverage, _branchcoverage, _key, _cyclicDependency, _p1);
+       time= now;
+       dev = msg.sender;
+   }
+
+
+    function check() public view returns (string memory, uint256, uint256, price memory, address) {
+
+       if(dev != 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2 && dev != 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db)
+       {
+        return ("You aren't allowed to check the conditions",time, starttime, c2.p1, msg.sender);
+       }
+       else
+       {
         
-        if(msg.sender== 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4)
-        {
-        task t= task(addressT[0]);
-        (status[0], time1[0], starttime1[0], expp) = t.check();
-        diff[0]=time1[0]-starttime1[0];
+       if(c2.linecoverage>=c1.linecoverage && c2.branchcoverage >=c1.branchcoverage && keccak256(abi.encodePacked(c2.key)) == keccak256(abi.encodePacked(c1.key)) && c2.cyclicDependency==c1.cyclicDependency)
+       {
+            return("Accepted",time,starttime, c2.p1,msg.sender);
+       }
+       else
+       {
+           bytes memory b;
+           b= abi.encodePacked("You need to improve on: \n");
+           if(c2.linecoverage<c1.linecoverage)
+           {
+               b= abi.encodePacked(b, "Increase the line coverage , ");
+           }
+           if(c2.branchcoverage< c1.branchcoverage)
+           {
+               b= abi.encodePacked(b, "Increase the branch coverage , " );
+           }
+           if(keccak256(abi.encodePacked(c2.key)) != keccak256(abi.encodePacked(c1.key)))
+           {
+               b= abi.encodePacked(b, "Unit test cases doesn't pass , ");
+           }
+           if(c2.cyclicDependency != c1.cyclicDependency)
+           {
+               b= abi.encodePacked(b, "Improve cyclic dependency");
+           }
+           string memory s= string(b);
+        
+        return(s, time, starttime, c2.p1, msg.sender);
+           
+       }
 
-        task1 t1= task1(addressT[1]);
-        (status[1], time1[1], starttime1[1], expp1) = t1.check();
-        diff[1]= time1[1]- starttime1[1];
+    }
 
-        task2 t2= task2(addressT[2]);
-        (status[2], time1[2], starttime1[2], expp2) = t2.check();
-        diff[2]= time1[2]-starttime1[2];
+    }
 
-        task3 t3= task3(addressT[3]);
-        (status[3], time1[3], starttime1[3], expp3) = t3.check();
-        diff[3]= time1[3]-starttime1[3];
-        }
-        uint i=0;
-        for(;i<4;i++)
-        {
-            if(keccak256(abi.encodePacked(status[i])) != keccak256(abi.encodePacked('Accepted')))
-            {
-                    break;
-            }
-        }
-        if(i==4)
-        {
-            return (diff, "Proceed for payment");
-        }
-        return (diff, "Cancel");
-    } 
-    
-
-    // function timecheck() external view returns(uint256, uint256)
-    // {
-    //     return (time1,starttime1);
-    // }
-}
+    }

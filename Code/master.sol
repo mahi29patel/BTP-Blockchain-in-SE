@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 import 'task.sol';
 import 'task1.sol';
@@ -10,7 +10,7 @@ contract master{
     address[4] addressT;
 
     
-    function setAddressT(address[4] _addressT) external {
+    function setAddressT(address[4] calldata _addressT) external {
         addressT= _addressT;
     }
 
@@ -20,7 +20,7 @@ contract master{
     uint256[4] excp2= [60, 80, 70, 80];
     uint256[4] excp3= [60, 80, 70, 80];
 
-    string[4] public status;
+    string[4] status;
     int[4] penalty1;
     uint256[4] time1;
     uint256[4] starttime1;
@@ -37,7 +37,7 @@ contract master{
     // }  
 
     // //compare function of time and price to calculate the penalty points
-    // function compare(uint256 _time1, uint256 _starttime1, uint i, address sender) public view
+    // function public compare(uint256 _time1, uint256 _starttime1, uint i, address sender) public view
     // {
     //     diff[i]=(_time1-_starttime1)/3600;
     //         if(exptime[i]-diff[i] < 0)
@@ -47,7 +47,7 @@ contract master{
       
     // }
 
-    function callCheck() public view returns(uint256[4],string, int[4])
+    function callCheck() external returns(uint256[4] memory,string memory, int[4] memory, int)
     {
         
         if(msg.sender== 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4)
@@ -184,9 +184,10 @@ contract master{
         }
         if(i==4)
         {
-            return (diff, "Proceed for payment",penalty1);
+            // msg.sender.transfer(1 ether);
+            return (diff, "Proceed for payment",penalty1,1);
         }
-        return (diff, "Cancel",penalty1);
+        return (diff, "Cancel",penalty1,-1);
     } 
     
 
